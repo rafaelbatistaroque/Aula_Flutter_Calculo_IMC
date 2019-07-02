@@ -8,14 +8,17 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   TextEditingController pesoCrtl = new TextEditingController();
   TextEditingController alturaCrtl = new TextEditingController();
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
   String _informe = "Digite seu peso e sua altura";
 
 //Resetar texts
   void _textReset() {
+    pesoCrtl.text = "";
+    alturaCrtl.text = "";
     setState(() {
-      pesoCrtl.text = "";
-      alturaCrtl.text = "";
       _informe = "Digite seu peso e sua altura";
+      _formKey = new GlobalKey<FormState>(); 
     });
   }
 
@@ -57,43 +60,62 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Icon(Icons.person, size: 120.0, color: Colors.blue),
-              TextField(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Icon(Icons.person, size: 120.0, color: Colors.blue),
+                TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       labelText: "Peso (Kg)",
                       labelStyle: TextStyle(color: Colors.blue)),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.blue, fontSize: 16.0),
-                  controller: pesoCrtl),
-              TextField(
+                  controller: pesoCrtl,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Insira o peso";
+                    }
+                  },
+                ),
+                TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       labelText: "Altura (cm)",
                       labelStyle: TextStyle(color: Colors.blue)),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.blue, fontSize: 16.0),
-                  controller: alturaCrtl),
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Container(
-                  height: 50.0,
-                  child: RaisedButton(
-                      child: Text(
-                        "Calcular",
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
-                      color: Colors.blue,
-                      onPressed: _calcularIMC),
+                  controller: alturaCrtl,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Insira a altura";
+                    }
+                  },
                 ),
-              ),
-              Text(_informe,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.blue)),
-            ],
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: Container(
+                    height: 50.0,
+                    child: RaisedButton(
+                        child: Text(
+                          "Calcular",
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        ),
+                        color: Colors.blue,
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            _calcularIMC();
+                          }
+                        }),
+                  ),
+                ),
+                Text(_informe,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.blue)),
+              ],
+            ),
           ),
         ));
   }
